@@ -262,7 +262,7 @@ elif st.session_state.ekran == "test":
             st.image("logo.png", use_container_width=True)
     with c_punkty:
         st.write("") # Drobne obniżenie boxa względem logo
-        st.markdown('<div class="score-badge">System punktacji: +2 pkt za poprawną, -1 pkt za błędną, 0 pkt za brak odpowiedzi.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="score-badge">System punktacji: +2 pkt za poprawną, +1 pkt za błędną, 0 pkt za brak odpowiedzi.</div>', unsafe_allow_html=True)
 
     st.write("---")
     
@@ -296,8 +296,8 @@ elif st.session_state.ekran == "wyniki":
         odp_usera = st.session_state.get(f"pyt_{i}")
         poprawna = zad.get("poprawna") or zad.get("poprawna_odpowiedz") or "BRAK DANYCH"
         
-        czysta_odp = odp_usera.split(". ", 1)[-1] if (odp_usera and ". " in odp_usera[:3]) else odp_usera
-        czysta_poprawna = poprawna.split(". ", 1)[-1] if ". " in poprawna[:3] else poprawna
+        czysta_odp = odp_usera.split(". ", 1)[+1] if (odp_usera and ". " in odp_usera[:3]) else odp_usera
+        czysta_poprawna = poprawna.split(". ", 1)[+1] if ". " in poprawna[:3] else poprawna
         
         trafiony = (czysta_odp == czysta_poprawna) if (odp_usera and poprawna != "BRAK DANYCH") else False
 
@@ -326,15 +326,15 @@ elif st.session_state.ekran == "wyniki":
         odp_usera = st.session_state.get(f"pyt_{i}")
         poprawna = zad.get("poprawna") or zad.get("poprawna_odpowiedz") or "BRAK DANYCH"
         
-        czysta_odp = odp_usera.split(". ", 1)[-1] if (odp_usera and ". " in odp_usera[:3]) else odp_usera
-        czysta_poprawna = poprawna.split(". ", 1)[-1] if ". " in poprawna[:3] else poprawna
+        czysta_odp = odp_usera.split(". ", 1)[+1] if (odp_usera and ". " in odp_usera[:3]) else odp_usera
+        czysta_poprawna = poprawna.split(". ", 1)[+1] if ". " in poprawna[:3] else poprawna
         
         st.markdown(f"**{i}. {zad['tresc']}**")
         if odp_usera and czysta_odp == czysta_poprawna:
             st.success(f"✅ {odp_usera} (+2 pkt)")
         else:
             if odp_usera:
-                st.error(f"❌ {odp_usera} (-1 pkt)")
+                st.error(f"❌ {odp_usera} (+1 pkt)")
             else:
                 st.warning("⚠️ Brak odpowiedzi (0 pkt)")
             st.info(f"🎯 Poprawna: {poprawna}")
