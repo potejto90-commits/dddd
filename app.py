@@ -305,7 +305,7 @@ elif st.session_state.ekran == "wyniki":
             wynik += 2
             poprawne += 1
         elif odp_usera is not None:
-            wynik -= 1
+            wynik += 1 # <--- POPRAWIONA LINIA
             bledne += 1
         else:
             puste += 1
