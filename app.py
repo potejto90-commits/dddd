@@ -101,28 +101,54 @@ st.markdown("""
         border: 2px solid #aed6f1;
     }
 
-    /* ----- OPTYMALIZACJA POD TELEFONY (MOBILE RWD) ----- */
+  /* ----- OPTYMALIZACJA POD TELEFONY (MOBILE RWD) ----- */
     @media (max-width: 768px) {
         .block-container {
-            padding: 1.5rem 1rem !important; /* Ścięcie wielkich bocznych marginesów */
+            padding: 1rem 0.8rem !important; /* Mniejsze marginesy = więcej miejsca na tekst */
             margin-top: 0 !important;
-            border-radius: 0px; /* Brak zaokrągleń przy krawędziach małego ekranu */
+            border-radius: 0px; 
         }
         
+        /* Znaczne powiększenie głównego tekstu (treść pytań i odpowiedzi) */
+        p, span, label, div[data-testid="stMarkdownContainer"] {
+            font-size: 18px !important;
+            line-height: 1.5 !important;
+        }
+
+        /* Tagi "🤖 AI" oraz "📜 OWE" (proporcjonalnie mniejsze, by nie rozpraszać) */
+        span[style*='color:#7f8c8d'] {
+            font-size: 14px !important;
+        }
+        
+        /* Rozstrzelenie opcji A/B/C/D dla łatwiejszego trafienia palcem */
+        div[role="radiogroup"] label {
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
+        }
+        
+        /* Główne przyciski */
         button[kind="primary"] {
-            font-size: 18px !important; /* Mniejszy przycisk na telefony */
-            padding: 12px 20px !important;
+            font-size: 20px !important; 
+            padding: 15px 20px !important;
         }
         
+        /* Przyciski poboczne */
+        button[kind="secondary"] {
+            font-size: 16px !important;
+            padding: 12px 15px !important;
+        }
+        
+        /* Niebieski box punktacji na telefonie */
         .score-badge {
-            font-size: 13px !important; /* Zmniejszenie tekstu w niebieskim boxie */
-            padding: 10px;
-            margin-top: 10px;
+            font-size: 15px !important; 
+            padding: 12px;
+            margin-top: 5px;
         }
         
-        h1 {
-            font-size: 32px !important; /* Pomniejszenie nagłówka z wynikiem */
-        }
+        /* Powiększenie nagłówków */
+        h1 { font-size: 34px !important; }
+        h2 { font-size: 26px !important; }
+        h3 { font-size: 22px !important; }
     }
     </style>
 """, unsafe_allow_html=True)
