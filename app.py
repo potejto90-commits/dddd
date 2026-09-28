@@ -28,7 +28,7 @@ Twoje zadanie:
     
     try:
         # Używamy modelu flash - jest bardzo szybki i idealny do krótkich interakcji na czacie
-        model = genai.GenerativeModel('gemini-1.5-flash-latest') 
+        model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(f"{kontekst}\n\nPytanie ucznia: {pytanie_usera}")
         return response.text
     except Exception as e:
