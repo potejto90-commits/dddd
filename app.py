@@ -4,9 +4,36 @@ import random
 import math
 import base64
 import os
+import google.generativeai as genai
 
 st.set_page_config(page_title="Trening OWE", layout="wide", page_icon="📈")
 
+# Konfiguracja API - Streamlit sam zaczyta klucz z pliku secrets.toml
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
+def pobierz_odpowiedz_ai(pytanie_usera, tresc_zadania, warianty):
+    # Rozbudowany system prompt - nadajemy modelowi rolę eksperta i tutora OWE
+    kontekst = f"""Jesteś zaawansowanym tutorem przygotowującym ucznia do Olimpiady Wiedzy Ekonomicznej (OWE).
+Masz głęboką wiedzę z makroekonomii, finansów, demografii i zarządzania.
+Uczeń rozwiązuje właśnie test i ma wątpliwość do poniższego zadania.
+
+Treść zadania: {tresc_zadania}
+Dostępne warianty odpowiedzi: {warianty}
+
+Twoje zadanie:
+1. Odpowiedz na pytanie ucznia zwięźle i profesjonalnie.
+2. Wyjaśnij mechanizmy ekonomiczne stojące za tym zadaniem.
+3. Jeśli uczeń nie pyta wprost o rozwiązanie, postaraj się go naprowadzić na właściwy tor myślenia, zamiast od razu podawać odpowiedź A, B, C lub D.
+"""
+    
+    try:
+        # Używamy modelu flash - jest bardzo szybki i idealny do krótkich interakcji na czacie
+        model = genai.GenerativeModel('gemini-1.5-flash') 
+        response = model.generate_content(f"{kontekst}\n\nPytanie ucznia: {pytanie_usera}")
+        return response.text
+    except Exception as e:
+        return f"⚠️ Wystąpił błąd podczas łączenia z serwerem AI: {e}"
+    
 # --- FUNKCJE POMOCNICZE UI ---
 def dodaj_tlo_z_pliku(plik_tla):
     if os.path.exists(plik_tla):
@@ -28,6 +55,7 @@ def dodaj_tlo_z_pliku(plik_tla):
 
 # Zaawansowany CSS dla przycisków, paneli i czytelności
 # Zaawansowany CSS dla przycisków, paneli i czytelności (Wersja RWD - Mobile Friendly)
+# Zaawansowany CSS dla przycisków, paneli i czytelności (Wersja RWD - Mobile Friendly)
 st.markdown("""
     <style>
     /* Ukrycie paska top Streamlita */
@@ -40,6 +68,21 @@ st.markdown("""
         color: #2c3e50 !important;
     }
     
+    /* --- ZWIĘKSZONA CZCIONKA NA KOMPUTERACH (DESKTOP) --- */
+    p, span, label, div[data-testid="stMarkdownContainer"] {
+        font-size: 20px !important; 
+        line-height: 1.6 !important;
+    }
+    h1 { font-size: 42px !important; }
+    h2 { font-size: 34px !important; }
+    h3 { font-size: 26px !important; }
+    
+    /* Tagi AI / OWE na komputerze */
+    span[style*='color:#7f8c8d'] {
+        font-size: 16px !important;
+    }
+    /* ---------------------------------------------------- */
+
     /* Główny kontener (Desktop) */
     .block-container {
         background-color: rgba(255, 255, 255, 0.94) !important;
@@ -83,9 +126,9 @@ st.markdown("""
         background-color: #1e90ff !important;
         color: white !important;
         border-radius: 5px !important;
-        font-size: 14px !important;
+        font-size: 18px !important;
         border: none !important;
-        padding: 5px 20px !important;
+        padding: 8px 20px !important;
         width: 100%;
     }
     
@@ -96,7 +139,7 @@ st.markdown("""
         padding: 15px 25px;
         text-align: center;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 18px;
         color: #0b5345;
         border: 2px solid #aed6f1;
     }
@@ -104,56 +147,60 @@ st.markdown("""
   /* ----- OPTYMALIZACJA POD TELEFONY (MOBILE RWD) ----- */
     @media (max-width: 768px) {
         .block-container {
-            padding: 1rem 0.8rem !important; /* Mniejsze marginesy = więcej miejsca na tekst */
+            padding: 1rem 0.8rem !important; 
             margin-top: 0 !important;
             border-radius: 0px; 
         }
         
-        /* Znaczne powiększenie głównego tekstu (treść pytań i odpowiedzi) */
+        /* JESZCZE WIĘKSZA CZCIONKA DLA TELEFONÓW */
         p, span, label, div[data-testid="stMarkdownContainer"] {
-            font-size: 18px !important;
-            line-height: 1.5 !important;
+            font-size: 24px !important; /* Było 18px */
+            line-height: 1.6 !important;
         }
 
-        /* Tagi "🤖 AI" oraz "📜 OWE" (proporcjonalnie mniejsze, by nie rozpraszać) */
+        /* Tagi "🤖 AI" oraz "📜 OWE" na telefonie */
         span[style*='color:#7f8c8d'] {
-            font-size: 14px !important;
+            font-size: 18px !important; /* Było 14px */
         }
         
         /* Rozstrzelenie opcji A/B/C/D dla łatwiejszego trafienia palcem */
         div[role="radiogroup"] label {
-            padding-top: 12px !important;
-            padding-bottom: 12px !important;
+            padding-top: 15px !important;
+            padding-bottom: 15px !important;
         }
         
         /* Główne przyciski */
         button[kind="primary"] {
-            font-size: 20px !important; 
-            padding: 15px 20px !important;
+            font-size: 24px !important; /* Było 20px */
+            padding: 18px 20px !important;
         }
         
         /* Przyciski poboczne */
         button[kind="secondary"] {
-            font-size: 16px !important;
-            padding: 12px 15px !important;
+            font-size: 20px !important; /* Było 16px */
+            padding: 15px 15px !important;
         }
         
         /* Niebieski box punktacji na telefonie */
         .score-badge {
-            font-size: 15px !important; 
+            font-size: 18px !important; /* Było 15px */
             padding: 12px;
             margin-top: 5px;
         }
         
-        /* Powiększenie nagłówków */
-        h1 { font-size: 34px !important; }
-        h2 { font-size: 26px !important; }
-        h3 { font-size: 22px !important; }
+        /* Powiększenie nagłówków na telefonie */
+        h1 { font-size: 38px !important; } /* Było 34px */
+        h2 { font-size: 30px !important; } /* Było 26px */
+        h3 { font-size: 26px !important; } /* Było 22px */
     }
     </style>
 """, unsafe_allow_html=True)
 
 dodaj_tlo_z_pliku("tlo.png")
+
+
+
+
 
 # --- LOGIKA APLIKACJI ---
 @st.cache_data
@@ -280,36 +327,75 @@ elif st.session_state.ekran == "konfiguracja":
 # ==========================================
 # EKRAN 2: TEST 
 # ==========================================
+# ==========================================
+# EKRAN 2: TEST (Wersja z interaktywnym AI)
+# ==========================================
 elif st.session_state.ekran == "test":
-    # Przesunięcie logo lekko w prawo dzięki zastosowaniu pustej kolumny (c_spacer)
     c_spacer, c_logo, c_punkty, c_spacer2 = st.columns([0.2, 1.5, 3, 0.2])
     with c_logo:
         if os.path.exists("logo.png"):
             st.image("logo.png", use_container_width=True)
     with c_punkty:
-        st.write("") # Drobne obniżenie boxa względem logo
-        st.markdown('<div class="score-badge">System punktacji: +2 pkt za poprawną, +1 pkt za błędną, 0 pkt za brak odpowiedzi.</div>', unsafe_allow_html=True)
+        st.write("") 
+        st.markdown('<div class="score-badge">System punktacji: +2 pkt za poprawną, -1 pkt za błędną, 0 pkt za brak odpowiedzi.</div>', unsafe_allow_html=True)
 
     st.write("---")
     
-    with st.form("formularz_testu"):
-        for i, zad in enumerate(st.session_state.test_dane, 1):
-            st.markdown(f"**{i}. {zad['tresc']}**")
-            if zad.get("wygenerowane_przez_ai"):
-                st.markdown(f"<span style='color:#7f8c8d; font-size:13px;'>🤖 AI | Dział: {zad.get('kategoria', 'Inne')}</span>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<span style='color:#7f8c8d; font-size:13px;'>📜 OWE | Dział: {zad.get('kategoria', 'Inne')}</span>", unsafe_allow_html=True)
-            
-            st.write("")
-            st.radio("Odp:", zad["warianty_potasowane"], key=f"pyt_{i}", index=None, label_visibility="collapsed")
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.divider()
+    # Inicjalizacja słownika przechowującego historię czatów dla poszczególnych pytań
+    if "chaty" not in st.session_state:
+        st.session_state.chaty = {}
+
+    # Usunięto st.form, aby umożliwić interakcję z czatem w trakcie testu
+    for i, zad in enumerate(st.session_state.test_dane, 1):
         
-        c_btn1, c_btn2, c_btn3 = st.columns([1, 2, 1])
-        with c_btn2:
-            if st.form_submit_button("Zakończ test", type="primary", use_container_width=True):
-                st.session_state.ekran = "wyniki"
-                st.rerun()
+        # Przygotowanie pustej historii dla nowego pytania
+        if i not in st.session_state.chaty:
+            st.session_state.chaty[i] = []
+
+        st.markdown(f"**{i}. {zad['tresc']}**")
+        if zad.get("wygenerowane_przez_ai"):
+            st.markdown(f"<span style='color:#7f8c8d; font-size:13px;'>🤖 AI | Dział: {zad.get('kategoria', 'Inne')}</span>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<span style='color:#7f8c8d; font-size:13px;'>📜 OWE | Dział: {zad.get('kategoria', 'Inne')}</span>", unsafe_allow_html=True)
+        
+        st.write("")
+        st.radio("Odp:", zad["warianty_potasowane"], key=f"pyt_{i}", index=None, label_visibility="collapsed")
+        
+        # --- MODUŁ MINI-CZATU AI ---
+        with st.expander("💡 Nie rozumiesz? Poproś AI o pomoc"):
+            # Renderowanie historii rozmowy dla tego konkretnego zadania
+            for msg in st.session_state.chaty[i]:
+                if msg["rola"] == "user":
+                    st.markdown(f"🧑‍🎓 **Ty:** {msg['tekst']}")
+                else:
+                    st.markdown(f"🤖 **AI:** {msg['tekst']}")
+            
+            # Interfejs wprowadzania pytania
+            col_input, col_btn = st.columns([4, 1])
+            with col_input:
+                user_msg = st.text_input(f"Zadaj pytanie do zadania {i}:", key=f"chat_input_{i}", label_visibility="collapsed", placeholder="Np. dlaczego opcja A jest błędna?")
+            with col_btn:
+                if st.button("Wyślij", key=f"chat_btn_{i}", type="secondary"):
+                    if user_msg:
+                        # Zapisanie wiadomości użytkownika
+                        st.session_state.chaty[i].append({"rola": "user", "tekst": user_msg})
+                        
+                        # Pobranie odpowiedzi z zewnętrznego modelu
+                        odp_ai = pobierz_odpowiedz_ai(user_msg, zad['tresc'], zad['warianty_potasowane'])
+                        
+                        # Zapisanie i wyświetlenie odpowiedzi AI
+                        st.session_state.chaty[i].append({"rola": "ai", "tekst": odp_ai})
+                        st.rerun() # Wymuszenie odświeżenia, by pokazać nową wiadomość
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.divider()
+    
+    c_btn1, c_btn2, c_btn3 = st.columns([1, 2, 1])
+    with c_btn2:
+        # Zwykły przycisk (zamiast form_submit_button)
+        if st.button("Zakończ test", type="primary", use_container_width=True):
+            st.session_state.ekran = "wyniki"
+            st.rerun()
 
 # ==========================================
 # EKRAN 3: WYNIKI 
