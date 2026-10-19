@@ -54,8 +54,6 @@ def dodaj_tlo_z_pliku(plik_tla):
         )
 
 # Zaawansowany CSS dla przycisków, paneli i czytelności
-# Zaawansowany CSS dla przycisków, paneli i czytelności (Wersja RWD - Mobile Friendly)
-# Zaawansowany CSS dla przycisków, paneli i czytelności (Wersja RWD - Mobile Friendly)
 st.markdown("""
     <style>
     /* Ukrycie paska top Streamlita */
@@ -154,53 +152,44 @@ st.markdown("""
         
         /* JESZCZE WIĘKSZA CZCIONKA DLA TELEFONÓW */
         p, span, label, div[data-testid="stMarkdownContainer"] {
-            font-size: 24px !important; /* Było 18px */
+            font-size: 24px !important;
             line-height: 1.6 !important;
         }
 
         /* Tagi "🤖 AI" oraz "📜 OWE" na telefonie */
         span[style*='color:#7f8c8d'] {
-            font-size: 18px !important; /* Było 14px */
+            font-size: 18px !important;
         }
         
-        /* Rozstrzelenie opcji A/B/C/D dla łatwiejszego trafienia palcem */
         div[role="radiogroup"] label {
             padding-top: 15px !important;
             padding-bottom: 15px !important;
         }
         
-        /* Główne przyciski */
         button[kind="primary"] {
-            font-size: 24px !important; /* Było 20px */
+            font-size: 24px !important;
             padding: 18px 20px !important;
         }
         
-        /* Przyciski poboczne */
         button[kind="secondary"] {
-            font-size: 20px !important; /* Było 16px */
+            font-size: 20px !important;
             padding: 15px 15px !important;
         }
         
-        /* Niebieski box punktacji na telefonie */
         .score-badge {
-            font-size: 18px !important; /* Było 15px */
+            font-size: 18px !important;
             padding: 12px;
             margin-top: 5px;
         }
         
-        /* Powiększenie nagłówków na telefonie */
-        h1 { font-size: 38px !important; } /* Było 34px */
-        h2 { font-size: 30px !important; } /* Było 26px */
-        h3 { font-size: 26px !important; } /* Było 22px */
+        h1 { font-size: 38px !important; }
+        h2 { font-size: 30px !important; }
+        h3 { font-size: 26px !important; }
     }
     </style>
 """, unsafe_allow_html=True)
 
 dodaj_tlo_z_pliku("tlo.png")
-
-
-
-
 
 # --- LOGIKA APLIKACJI ---
 @st.cache_data
@@ -215,7 +204,7 @@ if "ekran" not in st.session_state:
     st.session_state.ekran = "start"
 
 DOMYSLNE = {
-    "liczba_zadan": 50, # Domyślnie 50 pytań
+    "liczba_zadan": 50,
     "zrodlo": "Mieszane (Wszystkie)",
     "proc_zarz": 16,
     "proc_fin": 20,
@@ -254,7 +243,6 @@ def generuj_test():
     def bezpieczne_losowanie(pula, ile_chcemy):
         return random.sample(pula, min(ile_chcemy, len(pula)))
 
-    # Losowanie pytań
     test_zarz = bezpieczne_losowanie(kategorie["Zarządzanie"], ile_zarz)
     
     test_reszta = []
@@ -266,12 +254,10 @@ def generuj_test():
     if brakuje > 0:
         test_reszta.extend(bezpieczne_losowanie(kategorie["Ekonomia i Inne"], brakuje))
         
-    # Tasowanie pytań - Zarządzanie zawsze ląduje na końcu
     random.shuffle(test_reszta)
     random.shuffle(test_zarz)
     test_ostateczny = test_reszta + test_zarz
     
-    # Tasowanie wariantów odpowiedzi
     for i in range(len(test_ostateczny)):
         warianty = test_ostateczny[i]["odpowiedzi"].copy()
         random.shuffle(warianty)
@@ -327,9 +313,6 @@ elif st.session_state.ekran == "konfiguracja":
 # ==========================================
 # EKRAN 2: TEST 
 # ==========================================
-# ==========================================
-# EKRAN 2: TEST (Wersja z interaktywnym AI)
-# ==========================================
 elif st.session_state.ekran == "test":
     c_spacer, c_logo, c_punkty, c_spacer2 = st.columns([0.2, 1.5, 3, 0.2])
     with c_logo:
@@ -341,14 +324,10 @@ elif st.session_state.ekran == "test":
 
     st.write("---")
     
-    # Inicjalizacja słownika przechowującego historię czatów dla poszczególnych pytań
     if "chaty" not in st.session_state:
         st.session_state.chaty = {}
 
-    # Usunięto st.form, aby umożliwić interakcję z czatem w trakcie testu
     for i, zad in enumerate(st.session_state.test_dane, 1):
-        
-        # Przygotowanie pustej historii dla nowego pytania
         if i not in st.session_state.chaty:
             st.session_state.chaty[i] = []
 
@@ -361,38 +340,29 @@ elif st.session_state.ekran == "test":
         st.write("")
         st.radio("Odp:", zad["warianty_potasowane"], key=f"pyt_{i}", index=None, label_visibility="collapsed")
         
-        # --- MODUŁ MINI-CZATU AI ---
         with st.expander("💡 Nie rozumiesz? Poproś AI o pomoc"):
-            # Renderowanie historii rozmowy dla tego konkretnego zadania
             for msg in st.session_state.chaty[i]:
                 if msg["rola"] == "user":
                     st.markdown(f"🧑‍🎓 **Ty:** {msg['tekst']}")
                 else:
                     st.markdown(f"🤖 **AI:** {msg['tekst']}")
             
-            # Interfejs wprowadzania pytania
             col_input, col_btn = st.columns([4, 1])
             with col_input:
                 user_msg = st.text_input(f"Zadaj pytanie do zadania {i}:", key=f"chat_input_{i}", label_visibility="collapsed", placeholder="Np. dlaczego opcja A jest błędna?")
             with col_btn:
                 if st.button("Wyślij", key=f"chat_btn_{i}", type="secondary"):
                     if user_msg:
-                        # Zapisanie wiadomości użytkownika
                         st.session_state.chaty[i].append({"rola": "user", "tekst": user_msg})
-                        
-                        # Pobranie odpowiedzi z zewnętrznego modelu
                         odp_ai = pobierz_odpowiedz_ai(user_msg, zad['tresc'], zad['warianty_potasowane'])
-                        
-                        # Zapisanie i wyświetlenie odpowiedzi AI
                         st.session_state.chaty[i].append({"rola": "ai", "tekst": odp_ai})
-                        st.rerun() # Wymuszenie odświeżenia, by pokazać nową wiadomość
+                        st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.divider()
     
     c_btn1, c_btn2, c_btn3 = st.columns([1, 2, 1])
     with c_btn2:
-        # Zwykły przycisk (zamiast form_submit_button)
         if st.button("Zakończ test", type="primary", use_container_width=True):
             st.session_state.ekran = "wyniki"
             st.rerun()
@@ -417,8 +387,8 @@ elif st.session_state.ekran == "wyniki":
             wynik += 2
             poprawne += 1
         elif odp_usera is not None:
-            wynik += 1 # <--- POPRAWIONA LINIA
-            bledne += 1
+            wynik -= 1  # Odejmujemy 1 punkt za błędną odpowiedź
+            bledne += 1 # Zwiększamy licznik błędów o 1
         else:
             puste += 1
 
@@ -446,7 +416,7 @@ elif st.session_state.ekran == "wyniki":
             st.success(f"✅ {odp_usera} (+2 pkt)")
         else:
             if odp_usera:
-                st.error(f"❌ {odp_usera} (+1 pkt)")
+                st.error(f"❌ {odp_usera} (-1 pkt)")
             else:
                 st.warning("⚠️ Brak odpowiedzi (0 pkt)")
             st.info(f"🎯 Poprawna: {poprawna}")
